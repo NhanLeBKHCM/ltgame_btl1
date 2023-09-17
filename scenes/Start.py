@@ -7,11 +7,14 @@ from utils import *
 from numpy import random
 import numpy as np
 
-
+pygame.init()
+pygame.font.init()
+font = pygame.font.SysFont(None, 30)
 class StartScene:
     def __init__(self, display: pygame.Surface, gameSceneManager: GameSceneManager):
         self.display = display
         self.gameSceneManager = gameSceneManager
+        self.score = 0;
 
     def start(self):
         self.all_zombie = pygame.sprite.Group()
@@ -50,12 +53,14 @@ class StartScene:
         self.startTime = pygame.time.get_ticks()
 
     def run(self):
-        if pygame.time.get_ticks() - self.startTime >= 3000:
+        if pygame.time.get_ticks() - self.startTime >= 1000:
             arr = np.array([0, 1, 2, 3, 4, 5])
             arr = random.permutation(arr)
             for i in arr:
                 if self.all_zombie.sprites()[i].state == "hide":
                     self.all_zombie.sprites()[i].idle()
+                    self.all_zombie.sprites()[i].idle_time(pygame.time.get_ticks())
+
                     break
             self.startTime = pygame.time.get_ticks()
         for event in pygame.event.get():
@@ -69,6 +74,13 @@ class StartScene:
                 )
                 for zombie in zombie_collide:
                     zombie.dead()
+                    self.score += 1
+
+         # Render the score text
+        score_text = font.render(f"Score: {self.score}", True, (255, 255, 255))
+
+        # Draw the score onto the screen
+        self.display.blit(score_text, (10, 10))
 
         self.all_zombie.draw(self.display)
         self.all_hammer.draw(self.display)

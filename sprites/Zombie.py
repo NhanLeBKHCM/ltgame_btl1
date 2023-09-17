@@ -1,5 +1,6 @@
 import pygame
 import sys
+# import time
 
 from utils import *
 
@@ -26,6 +27,7 @@ class Zombie(pygame.sprite.Sprite):
         self.image = pygame.Surface((0, 0))
         self.rect = self.image.get_rect()
         self.rect.topleft = [pos_x, pos_y]
+        self.start_time = pygame.time.get_ticks() 
 
     def idle(self):
         if self.state != "idle":
@@ -33,12 +35,16 @@ class Zombie(pygame.sprite.Sprite):
             self.state = "idle"
             self.image = self.data["idle"]["image_sheets"][int(self.current_sheet)]
             self.rect.size = self.image.get_size()
+            # self.start_time = start_time
 
         if self.current_sheet >= len(self.data["idle"]["image_sheets"]) - 1:
             self.current_sheet = 0
         else:
             self.current_sheet += 0.2
             self.image = self.data["idle"]["image_sheets"][int(self.current_sheet)]
+    
+    def idle_time(self, start_time):
+        self.start_time = start_time
 
     def dead(self):
         if self.state != "dead":
@@ -62,9 +68,13 @@ class Zombie(pygame.sprite.Sprite):
             self.rect.size = [0, 0]
 
     def update(self):
+        if pygame.time.get_ticks() - self.start_time >= 3000:  # If more than 5 seconds have passed
+            self.hide()
         if self.state == "idle":
             self.idle()
+            pass
         elif self.state == "dead":
             self.dead()
         elif self.state == "hide":
             self.hide()
+
