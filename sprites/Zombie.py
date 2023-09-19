@@ -27,8 +27,8 @@ class Zombie(pygame.sprite.Sprite):
         self.image = pygame.Surface((0, 0))
         self.rect = self.image.get_rect()
         self.rect.topleft = [pos_x, pos_y]
-        self.liveTime = 1200
-        self.speedReduceLiveTime = 300
+        self.liveTime = 1500
+        self.speedReduceLiveTime = 200
 
     def idle(self):
         if self.state != "idle":
@@ -48,8 +48,14 @@ class Zombie(pygame.sprite.Sprite):
                 self.current_sheet += 0.2
                 self.image = self.data["idle"]["image_sheets"][int(self.current_sheet)]
 
+    def scream(self):
+        pygame.mixer.Channel(0).play(
+            pygame.mixer.Sound("data\\zombie\\sounds\\zombie-growl.mp3")
+        )
+
     def dead(self):
         if self.state != "dead":
+            self.scream()
             self.current_sheet = 0
             self.state = "dead"
             self.image = self.data["dead"]["image_sheets"][int(self.current_sheet)]
@@ -57,7 +63,9 @@ class Zombie(pygame.sprite.Sprite):
 
         if self.current_sheet >= len(self.data["dead"]["image_sheets"]) - 1:
             self.current_sheet = 0
+            pygame.mixer.Channel(0).stop()
             self.hide()
+
         else:
             self.current_sheet += 0.1
             self.image = self.data["dead"]["image_sheets"][int(self.current_sheet)]

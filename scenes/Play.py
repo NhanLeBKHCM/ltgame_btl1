@@ -78,7 +78,7 @@ class PlayScene:
                 else ""
             )
             + (
-                str((120 - int(duringTime / 1000)) % 60) + "0"
+                "0" + str((120 - int(duringTime / 1000)) % 60)
                 if ((120 - int(duringTime / 1000)) % 60) < 10
                 else str((120 - int(duringTime / 1000)) % 60)
             )

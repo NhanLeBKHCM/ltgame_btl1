@@ -29,6 +29,9 @@ class Hammer(pygame.sprite.Sprite):
 
     def smash(self):
         if self.state != "smashing":
+            pygame.mixer.Channel(1).play(
+                pygame.mixer.Sound("data\\hammer\\sounds\\table-smash.mp3")
+            )
             self.state = "smashing"
 
         else:
@@ -36,6 +39,7 @@ class Hammer(pygame.sprite.Sprite):
                 self.current_frame = 0
                 self.state = "no_work"
                 self.image = self.animate["smash"]["frames"][int(self.current_frame)]
+
             else:
                 self.current_frame += 1
                 self.image = self.animate["smash"]["frames"][int(self.current_frame)]
