@@ -13,64 +13,41 @@ class StartScene:
         self.display = display
         self.gameSceneManager = gameSceneManager
 
-    def start(self):
-        self.all_zombie = pygame.sprite.Group()
+    def init(self):
+        self.textFont = pygame.font.SysFont("monospace", 17, True)
+        self.state = "start"
 
-        zombies = [
-            Zombie(
-                SCREEN_WIDTH / 3 * 0 + SCREEN_WIDTH / 3 / 2 - 48,
-                SCREEN_HEIGHT / 2 * 0 + SCREEN_HEIGHT / 2 / 2 - 48,
-            ),
-            Zombie(
-                SCREEN_WIDTH / 3 * 1 + SCREEN_WIDTH / 3 / 2 - 48,
-                SCREEN_HEIGHT / 2 * 0 + SCREEN_HEIGHT / 2 / 2 - 48,
-            ),
-            Zombie(
-                SCREEN_WIDTH / 3 * 2 + SCREEN_WIDTH / 3 / 2 - 48,
-                SCREEN_HEIGHT / 2 * 0 + SCREEN_HEIGHT / 2 / 2 - 48,
-            ),
-            Zombie(
-                SCREEN_WIDTH / 3 * 0 + SCREEN_WIDTH / 3 / 2 - 48,
-                SCREEN_HEIGHT / 2 * 1 + SCREEN_HEIGHT / 2 / 2 - 48,
-            ),
-            Zombie(
-                SCREEN_WIDTH / 3 * 1 + SCREEN_WIDTH / 3 / 2 - 48,
-                SCREEN_HEIGHT / 2 * 1 + SCREEN_HEIGHT / 2 / 2 - 48,
-            ),
-            Zombie(
-                SCREEN_WIDTH / 3 * 2 + SCREEN_WIDTH / 3 / 2 - 48,
-                SCREEN_HEIGHT / 2 * 1 + SCREEN_HEIGHT / 2 / 2 - 48,
-            ),
-        ]
-        self.all_zombie.add(zombies)
-        pygame.mouse.set_visible(False)
-        self.all_hammer = pygame.sprite.Group()
-        self.player = Hammer()
-        self.all_hammer.add(self.player)
-        self.startTime = pygame.time.get_ticks()
+    def start(self, state=None, data=None):
+        if data:
+            self.data = data
+        if state:
+            self.state = state
 
-    def run(self):
-        if pygame.time.get_ticks() - self.startTime >= 3000:
-            arr = np.array([0, 1, 2, 3, 4, 5])
-            arr = random.permutation(arr)
-            for i in arr:
-                if self.all_zombie.sprites()[i].state == "hide":
-                    self.all_zombie.sprites()[i].idle()
-                    break
-            self.startTime = pygame.time.get_ticks()
+    def end(self):
+        pass
+
+    def update(self):
+        self.display.fill((0, 0, 0))
+        if self.state == "start":
+            text = self.textFont.render("Click to start!", 1, (255, 255, 255))
+        else:
+            text = self.textFont.render(
+                "End game! Your score: " + str(self.data["score"]), 1, (255, 255, 255)
+            )
+        self.display.blit(
+            text,
+            (
+                (SCREEN_WIDTH - text.get_size()[0]) / 2,
+                (SCREEN_HEIGHT - text.get_size()[1]) / 2,
+            ),
+        )
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                self.player.smash()
-                zombie_collide = pygame.sprite.spritecollide(
-                    self.player, self.all_zombie, False
-                )
-                for zombie in zombie_collide:
-                    zombie.dead()
-
-        self.all_zombie.draw(self.display)
-        self.all_hammer.draw(self.display)
-        self.all_zombie.update()
-        self.all_hammer.update()
+                if self.state == "start":
+                    self.gameSceneManager.setCurrentScene("play")
+                else:
+                    self.state = "start"

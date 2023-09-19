@@ -2,17 +2,19 @@ class GameSceneManager:
     def __init__(self, currentScene, scenes):
         self.currentScene = currentScene
         self.scenes = scenes
-        self.state = "pause"
 
-    def getScene(self):
+    def init_allScene(self):
+        for scene in list(self.scenes.values()):
+            scene.init()
+
+    def getCurrentScene(self):
         return {"name": self.currentScene, "scene": self.scenes[self.currentScene]}
 
-    def setScene(self, scene):
+    def setCurrentScene(self, scene, state=None, data=None):
+        if self.scenes:
+            self.scenes[self.currentScene].end()
         self.currentScene = scene
+        self.scenes[self.currentScene].start(state, data)
 
-    def run(self):
-        if self.state == "pause":
-            self.state = "running"
-            self.scenes[self.currentScene].start()
-        else:
-            self.scenes[self.currentScene].run()
+    def updateCurrentScene(self):
+        self.scenes[self.currentScene].update()
